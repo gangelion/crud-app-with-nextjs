@@ -1,14 +1,18 @@
+import { PrismaClient } from "@prisma/client";
 import { Config } from "apollo-server-micro";
 
-const DB = {
-  articles: [
-    { id: 1, title: "foo", content: "foooooooooooooo" },
-    { id: 2, title: "bar", content: "baaaaaaaaaaaaaa" },
-  ],
-};
-
+const prisma = new PrismaClient()
 export const resolvers: Config["resolvers"] = {
   Query: {
-    getArticles: () => DB.articles,
+    getUsers: () => prisma.user.findMany(),
   },
+  Mutation: {
+    createUser: (_, {name}) => {
+      return prisma.user.create({
+        data: {
+          name,
+        }
+      })
+    },
+  }
 };

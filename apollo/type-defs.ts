@@ -1,13 +1,16 @@
 import { gql, Config } from "apollo-server-micro";
 
 export const typeDefs: Config["typeDefs"] = gql`
-  type Article {
+  type User {
     id: Int
-    title: String
-    content: String
+    name: String
   }
 
   type Query {
-    getArticles: [Article]
+    getUsers: [User]
+  }
+
+  type Mutation {
+    createUser(name: String!): User!
   }
 `;
