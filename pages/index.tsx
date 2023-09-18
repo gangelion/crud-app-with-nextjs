@@ -2,6 +2,7 @@
 import styles from '../app/page.module.css'
 import {useEffect, useState} from "react";
 import { gql, useMutation, useQuery } from '@apollo/client';
+import ClickableElement from "@/app/ClickableElement";
 
 interface User {
   id: number
@@ -24,6 +25,15 @@ const CREATE_USER = gql`
   }
 `
 
+const EDIT_USERNAME = gql`
+  mutation EditUser($id: Int!, $name: String!) {
+    editUser(id: $id, name: $name) {
+      id
+      name
+    }
+  }
+`;
+
 const DELETE_USER = gql`
   mutation DeleteUser($id: Int!) {
     deleteUser(id: $id) {
@@ -34,9 +44,11 @@ const DELETE_USER = gql`
 function MyComponent() {
   const { loading, error, data } = useQuery(GET_USERS);
   const [createUser] = useMutation(CREATE_USER);
+  const [editUser] = useMutation(EDIT_USERNAME);
   const [deleteUser] = useMutation(DELETE_USER, {
     refetchQueries: [{ query: GET_USERS }],
   });
+
   const [users, setUsers] = useState<User[] | null>(null);
   const [inputValue, setInputValue] = useState('');
   useEffect(() => {
@@ -54,6 +66,8 @@ function MyComponent() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    if (!inputValue) return
+
     const { data: d } = await createUser({
       variables: {
         name: inputValue,
@@ -63,6 +77,12 @@ function MyComponent() {
     setUsers(_users)
     setInputValue('')
   };
+
+  const handleEditUser = async (id: number, e: any) => {
+    await editUser({
+      variables: { id, name: e.target.value },
+    });
+  }
 
   const handleDeleteUser = async (id: number) => {
     await deleteUser({
@@ -107,12 +127,9 @@ function MyComponent() {
         </form>
         <div>
           {users?.map(({name, id}, index) => (
-            <div style={{display: 'flex', height: '30px', width: '380px', alignItems: 'center', justifyContent: 'space-between'}}>
-              <div key={index}>{name}</div>
-              <div>
-                <button>編集</button>
-                <button onClick={() => handleDeleteUser(id)}>削除</button>
-              </div>
+            <div onBlur={(e) => handleEditUser(id, e)} style={{display: 'flex', height: '30px', width: '370px', alignItems: 'center', justifyContent: 'space-between'}}>
+              <ClickableElement key={index} name={name} />
+              <button onClick={() => handleDeleteUser(id)}>削除</button>
             </div>
         ))}
         </div>
