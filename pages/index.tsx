@@ -79,17 +79,23 @@ function MyComponent() {
   };
 
   const handleEditUser = async (id: number, e: any) => {
-    await editUser({
+    const { data: d } = await editUser({
       variables: { id, name: e.target.value },
     });
+    users?.forEach((user) => {
+      if (user.id === d.editUser.id) user.name = e.target.value
+    })
+    setUsers(users)
   }
 
   const handleDeleteUser = async (id: number) => {
-    await deleteUser({
+    const { data: d } = await deleteUser({
       variables: {
         id,
       },
     });
+    const _users = users?.filter((user) => user.id !== d.deleteUser.id) ?? []
+    setUsers(_users)
   }
 
   const inputStyle = {
@@ -127,8 +133,10 @@ function MyComponent() {
         </form>
         <div>
           {users?.map(({name, id}, index) => (
-            <div onBlur={(e) => handleEditUser(id, e)} style={{display: 'flex', height: '30px', width: '370px', alignItems: 'center', justifyContent: 'space-between'}}>
-              <ClickableElement key={index} name={name} />
+            <div style={{display: 'flex', height: '30px', width: '370px', alignItems: 'center', justifyContent: 'space-between'}}>
+              <div onBlur={(e) => handleEditUser(id, e)}>
+                <ClickableElement key={index} name={name} />
+              </div>
               <button onClick={() => handleDeleteUser(id)}>削除</button>
             </div>
         ))}
