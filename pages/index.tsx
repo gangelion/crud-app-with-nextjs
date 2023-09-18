@@ -7,7 +7,7 @@ interface User {
   id: number
   name: string
 }
-const GET_ARTICLES = gql`
+const GET_USERS = gql`
   query {
     getUsers {
       id
@@ -32,9 +32,11 @@ const DELETE_USER = gql`
   }
 `
 function MyComponent() {
-  const { loading, error, data } = useQuery(GET_ARTICLES);
+  const { loading, error, data } = useQuery(GET_USERS);
   const [createUser] = useMutation(CREATE_USER);
-  const [deleteUser] = useMutation(DELETE_USER);
+  const [deleteUser] = useMutation(DELETE_USER, {
+    refetchQueries: [{ query: GET_USERS }],
+  });
   const [users, setUsers] = useState<User[] | null>(null);
   const [inputValue, setInputValue] = useState('');
   useEffect(() => {
@@ -61,6 +63,14 @@ function MyComponent() {
     setUsers(_users)
     setInputValue('')
   };
+
+  const handleDeleteUser = async (id: number) => {
+    await deleteUser({
+      variables: {
+        id,
+      },
+    });
+  }
 
   const inputStyle = {
     padding: '10px',
@@ -95,11 +105,17 @@ function MyComponent() {
           />
           <button style={buttonStyle} type="submit">送信</button>
         </form>
-        <ul>
+        <div>
           {users?.map(({name, id}, index) => (
-            <li key={index}>{name}</li>
+            <div style={{display: 'flex', height: '30px', width: '380px', alignItems: 'center', justifyContent: 'space-between'}}>
+              <div key={index}>{name}</div>
+              <div>
+                <button>編集</button>
+                <button onClick={() => handleDeleteUser(id)}>削除</button>
+              </div>
+            </div>
         ))}
-        </ul>
+        </div>
       </div>
     </main>
   )

@@ -12,5 +12,6 @@ export const typeDefs: Config["typeDefs"] = gql`
 
   type Mutation {
     createUser(name: String!): User!
+    deleteUser(id: Int!): User!
   }
 `;

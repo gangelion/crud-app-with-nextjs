@@ -14,5 +14,10 @@ export const resolvers: Config["resolvers"] = {
         }
       })
     },
+    deleteUser: (_, {id}) => {
+      return prisma.user.delete({
+        where: { id }
+      })
+    }
   }
 };
