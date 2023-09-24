@@ -4,7 +4,7 @@ import { Config } from "apollo-server-micro";
 const prisma = new PrismaClient()
 export const resolvers: Config["resolvers"] = {
   Query: {
-    getUsers: () => prisma.user.findMany(),
+    getUsers: () => prisma.user.findMany({orderBy: {id: 'asc'}}),
   },
   Mutation: {
     createUser: (_, {name}) => {

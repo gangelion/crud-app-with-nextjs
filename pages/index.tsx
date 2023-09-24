@@ -79,6 +79,10 @@ function MyComponent() {
   };
 
   const handleEditUser = async (id: number, e: any) => {
+    if (e.target.value.trim() === '') {
+      alert('名前は必須')
+      return
+    }
     const { data: d } = await editUser({
       variables: { id, name: e.target.value },
     });
