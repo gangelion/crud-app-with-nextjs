@@ -66,7 +66,10 @@ function MyComponent() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (!inputValue) return
+    if (inputValue.trim() === '') {
+      alert('名前は必須')
+      return
+    }
 
     const { data: d } = await createUser({
       variables: {
